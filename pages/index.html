@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brainwee - AI-Powered Brain Tumor Analysis Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/index.css">
+</head>
+
+<body>
+    <!-- Popups remain outside main-content so they won’t be blurred -->
+    <div id="login-popup" class="popup">
+        <span class="close-popup" onclick="closePopup('login')">&times;</span>
+        <h2>Sign In</h2>
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button>Login</button>
+    </div>
+
+    <div id="signup-popup" class="popup">
+        <span class="close-popup" onclick="closePopup('signup')">&times;</span>
+        <h2>Sign Up</h2>
+        <input type="text" placeholder="Full Name">
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+        <button>Sign Up</button>
+    </div>
+
+    <!-- Main content wrapped in a container that will be blurred -->
+    <div class="main-content">
+        <header class="header">
+            <div class="logo">Brainwee</div>
+            <!-- Hamburger menu button for small screens -->
+            <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            <div class="nav-links" id="nav-links">
+                <a href="#features" class="cta-button">Features</a>
+                <a href="#dashboard" class="cta-button">Dashboard</a>
+                <a href="#" class="cta-button" onclick="openPopup('login')">Sign In</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>AI-Powered Brain Tumor Analysis</h1>
+            <p>Advanced tumor detection, classification, and collaborative treatment planning for medical professionals
+            </p>
+            <div class="break"></div>
+            <a href="#" class="cta-button" onclick="openPopup('signup')">Get Started</a>
+        </section>
+
+        <section class="features" id="features">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain feature-icon"></i>
+                    <h3>Tumor Detection</h3>
+                    <p>Instant AI analysis of MRI scans with binary tumor detection (Yes/No)</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map feature-icon"></i>
+                    <h3>Heatmap & Risk Analysis</h3>
+                    <p>Visual tumor localization and treatment risk assessment</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-stethoscope feature-icon"></i>
+                    <h3>Stage Detection</h3>
+                    <p>Comprehensive tumor classification and staging system</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-robot feature-icon"></i>
+                    <h3>Medical Chatbot</h3>
+                    <p>24/7 AI assistant for tumor-related queries and research</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="collaboration-section">
+            <h2>Collaborative Diagnosis</h2>
+            <p>Real-time case sharing and consultation with specialists</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-exclamation-triangle feature-icon"></i>
+                    <h3>Critical Case Flagging</h3>
+                    <p>Immediate alerts for high-risk patients</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-comments feature-icon"></i>
+                    <h3>Live Consultation</h3>
+                    <p>Secure in-app messaging and case discussion</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-preview" id="dashboard">
+            <h2>Secure Doctor Dashboard</h2>
+            <div class="dashboard-features">
+                <!-- Add dashboard screenshot or mockup here -->
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2023 Brainwee. Medical Professionals Platform</p>
+            <p>HIPAA Compliant | Secure Cloud Storage | 256-bit Encryption</p>
+        </footer>
+    </div>
+
+    <script src="../assets/js/scripts.js">
+
+    </script>
+</body>
+
+</html>

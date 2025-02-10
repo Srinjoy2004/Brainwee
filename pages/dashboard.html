@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brainwee - Doctor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/dashboard.css" />
+</head>
+
+<body>
+    <!-- Sidebar with user info, navigation, and close icon -->
+    <div class="sidebar" id="sidebar">
+        <!-- Close icon (only visible on mobile) -->
+        <span class="close-sidebar" onclick="toggleSidebar()"><i class="fas fa-times"></i></span>
+        <div class="user-info">
+            <p><strong>Dr. John Doe</strong></p>
+            <p>ID: 12345</p>
+        </div>
+        <ul>
+            <li class="menu-item active" onclick="showSection('add-patient', this)">
+                <i class="fas fa-user-plus"></i> Add Patient
+            </li>
+            <li class="menu-item" onclick="showSection('search-patient', this)">
+                <i class="fas fa-search"></i> Search Patient
+            </li>
+            <li id="menu-analyse" class="menu-item" onclick="showSection('analyse-patient', this)">
+                <i class="fas fa-x-ray"></i> Analyse Patient
+            </li>
+            <li class="menu-item" onclick="showSection('ai-chat', this)">
+                <i class="fas fa-robot"></i> Talk with AI
+            </li>
+            <li class="menu-item" onclick="showSection('refer-doctor', this)">
+                <i class="fas fa-user-md"></i> Refer to Doctor
+            </li>
+        </ul>
+        <ul class="logout">
+            <li onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content" id="main-content">
+        <!-- Mobile dashboard header with hamburger menu -->
+        <div class="dashboard-header">
+            <i class="fas fa-bars hamburger" onclick="toggleSidebar()"></i>
+            <h2>Dashboard</h2>
+        </div>
+
+        <!-- Add Patient Section -->
+        <div id="add-patient" class="section active">
+            <h2>Add Patient</h2>
+            <form id="add-patient-form">
+                <div class="form-grid">
+                    <!-- Row 1: First Name and Last Name -->
+                    <div class="form-group">
+                        <label for="first-name">First Name:</label>
+                        <input type="text" id="first-name" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name:</label>
+                        <input type="text" id="last-name" name="last_name" required>
+                    </div>
+                    <!-- Row 2: Phone Number and Age -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required>
+                    </div>
+                    <!-- Row 3: Address (Full width) -->
+                    <div class="form-group full-width">
+                        <label for="address">Address:</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    <!-- Row 4: State and District -->
+                    <div class="form-group">
+                        <label for="state">State:</label>
+                        <input type="text" id="state" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District:</label>
+                        <input type="text" id="district" name="district" required>
+                    </div>
+                    <!-- Row 5: Family History and Previous Doctor Name -->
+                    <div class="form-group">
+                        <label for="family-history">Family History of Brain Tumor:</label>
+                        <select id="family-history" name="family_history" required>
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="previous-doctor">Previous Doctor Name:</label>
+                        <input type="text" id="previous-doctor" name="previous_doctor">
+                    </div>
+                    <!-- Row 6: MRI Report (Full width) -->
+                    <div class="form-group full-width">
+                        <label for="mri-report">MRI Report:</label>
+                        <input type="file" id="mri-report" name="mri_report" accept="image/*,application/pdf" required>
+                    </div>
+                    <!-- Submit button (spanning full width) -->
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+            <!-- Progress message container -->
+            <div id="progress-container" style="display: none;">
+                <p id="progress-message"></p>
+            </div>
+        </div>
+
+        <!-- Search Patient Section -->
+        <div id="search-patient" class="section">
+            <h2>Search Patient</h2>
+            <div class="search-container">
+                <input type="text" placeholder="Enter patient ID or name" id="search-query">
+                <button type="button" onclick="searchPatient()">Search</button>
+            </div>
+        </div>
+
+        <!-- Analyse Patient Section -->
+        <div id="analyse-patient" class="section">
+            <h2>Analyse Patient</h2>
+            <!-- Detection Result -->
+            <div id="detection-result"></div>
+            <!-- Tumour Details: Each item is wrapped in a tumour-card -->
+            <div id="tumour-details" style="display: none;">
+                <div class="tumour-card">
+                    <p><strong>Type of Brain Tumour:</strong></p>
+                    <p>Glioblastoma Multiforme</p>
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Risk Stratification:</strong></p>
+                    <img src="https://via.placeholder.com/400x200?text=Risk+Graph" alt="Risk Graph">
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Heatmap Generation:</strong></p>
+                    <img src="https://via.placeholder.com/400x200?text=Heatmap" alt="Heatmap">
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Stage Analysis:</strong></p>
+                    <p>Stage II</p>
+                </div>
+                <div class="tumour-card">
+                    <p><strong>AI Analysis:</strong></p>
+                    <p>Suggested Treatment: Surgical resection with adjunct chemotherapy.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Chat Section -->
+        <div id="ai-chat" class="section">
+            <h2>Talk with AI</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Chat messages will appear here -->
+                </div>
+                <div class="chat-input-container">
+                    <!-- Hidden file input triggered by the attachment label -->
+                    <input type="file" id="attachment-input" style="display: none;">
+                    <label for="attachment-input" class="attachment-label">
+                        <i class="fas fa-paperclip"></i>
+                    </label>
+                    <input type="text" id="chat-input" placeholder="Type your message here...">
+                    <button id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refer to Doctor Section -->
+        <div id="refer-doctor" class="section">
+            <h2>Refer to Doctor</h2>
+            <p>Invite other doctors for collaboration.</p>
+        </div>
+    </div>
+
+    <script src="../assets/js/scripts.js"></script>
+</body>
+
+</html>
