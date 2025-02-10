@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brainwee - Doctor Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f4f9;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 250px;
+            background: #005792;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        /* Close icon for sidebar (only visible on mobile) */
+        .close-sidebar {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .close-sidebar {
+                display: block;
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* User info at the top of the sidebar */
+        .sidebar .user-info {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sidebar .user-info p {
+            margin: 0.5rem 0;
+        }
+
+        /* Navigation list */
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .sidebar ul li:hover,
+        .sidebar ul li.active {
+            background: #0077b6;
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+        }
+
+        /* Logout section */
+        .sidebar .logout {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #0077b6;
+        }
+
+        .sidebar .logout li {
+            color: #ffcccb;
+            cursor: pointer;
+        }
+
+        /* Main content styles */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: 100%;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header for mobile view with hamburger icon */
+        .dashboard-header {
+            display: none;
+            background: #005792;
+            color: white;
+            padding: 1rem;
+            align-items: center;
+        }
+
+        .dashboard-header .hamburger {
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+
+        /* Section display styles */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-header {
+                display: flex;
+            }
+        }
+
+        /* Form styles for Add Patient */
+        form {
+            max-width: 800px;
+            margin-top: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Full width fields */
+        .full-width {
+            grid-column: span 2;
+        }
+
+        button[type="submit"] {
+            background-color: #005792;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            grid-column: span 2;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0077b6;
+        }
+
+        /* Progress message styling */
+        #progress-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e0f7fa;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #progress-message {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #005792;
+        }
+
+        /* Search box styles for Search Patient section */
+        .search-container {
+            display: flex;
+            max-width: 400px;
+            margin-top: 1rem;
+        }
+
+        .search-container input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .search-container button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-left: none;
+            background-color: #005792;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .search-container button:hover {
+            background-color: #0077b6;
+        }
+
+        /* Styles for the Analyse Patient components */
+        #tumour-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            align-items: center;
+            justify-items: center;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .tumour-card {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .tumour-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+
+        /* Styles for the AI Chat window */
+        .chat-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 1rem;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            background-color: #e0f7fa;
+        }
+
+        .chat-message.system {
+            background-color: #f0f0f0;
+            font-style: italic;
+        }
+
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input-container input[type="text"] {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .chat-input-container button {
+            background-color: #005792;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-left: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-input-container button:hover {
+            background-color: #0077b6;
+        }
+
+        .attachment-label {
+            margin-right: 0.5rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #005792;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar with user info, navigation, and close icon -->
+    <div class="sidebar" id="sidebar">
+        <!-- Close icon (only visible on mobile) -->
+        <span class="close-sidebar" onclick="toggleSidebar()"><i class="fas fa-times"></i></span>
+        <div class="user-info">
+            <p><strong>Dr. John Doe</strong></p>
+            <p>ID: 12345</p>
+        </div>
+        <ul>
+            <li class="menu-item active" onclick="showSection('add-patient', this)">
+                <i class="fas fa-user-plus"></i> Add Patient
+            </li>
+            <li class="menu-item" onclick="showSection('search-patient', this)">
+                <i class="fas fa-search"></i> Search Patient
+            </li>
+            <li id="menu-analyse" class="menu-item" onclick="showSection('analyse-patient', this)">
+                <i class="fas fa-x-ray"></i> Analyse Patient
+            </li>
+            <li class="menu-item" onclick="showSection('ai-chat', this)">
+                <i class="fas fa-robot"></i> Talk with AI
+            </li>
+            <li class="menu-item" onclick="showSection('refer-doctor', this)">
+                <i class="fas fa-user-md"></i> Refer to Doctor
+            </li>
+        </ul>
+        <ul class="logout">
+            <li onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content" id="main-content">
+        <!-- Mobile dashboard header with hamburger menu -->
+        <div class="dashboard-header">
+            <i class="fas fa-bars hamburger" onclick="toggleSidebar()"></i>
+            <h2>Dashboard</h2>
+        </div>
+
+        <!-- Add Patient Section -->
+        <div id="add-patient" class="section active">
+            <h2>Add Patient</h2>
+            <form id="add-patient-form">
+                <div class="form-grid">
+                    <!-- Row 1: First Name and Last Name -->
+                    <div class="form-group">
+                        <label for="first-name">First Name:</label>
+                        <input type="text" id="first-name" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last Name:</label>
+                        <input type="text" id="last-name" name="last_name" required>
+                    </div>
+                    <!-- Row 2: Phone Number and Age -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required>
+                    </div>
+                    <!-- Row 3: Address (Full width) -->
+                    <div class="form-group full-width">
+                        <label for="address">Address:</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    <!-- Row 4: State and District -->
+                    <div class="form-group">
+                        <label for="state">State:</label>
+                        <input type="text" id="state" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="district">District:</label>
+                        <input type="text" id="district" name="district" required>
+                    </div>
+                    <!-- Row 5: Family History and Previous Doctor Name -->
+                    <div class="form-group">
+                        <label for="family-history">Family History of Brain Tumor:</label>
+                        <select id="family-history" name="family_history" required>
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="previous-doctor">Previous Doctor Name:</label>
+                        <input type="text" id="previous-doctor" name="previous_doctor">
+                    </div>
+                    <!-- Row 6: MRI Report (Full width) -->
+                    <div class="form-group full-width">
+                        <label for="mri-report">MRI Report:</label>
+                        <input type="file" id="mri-report" name="mri_report" accept="image/*,application/pdf" required>
+                    </div>
+                    <!-- Submit button (spanning full width) -->
+                    <button type="submit">Submit</button>
+                </div>
+            </form>
+            <!-- Progress message container -->
+            <div id="progress-container" style="display: none;">
+                <p id="progress-message"></p>
+            </div>
+        </div>
+
+        <!-- Search Patient Section -->
+        <div id="search-patient" class="section">
+            <h2>Search Patient</h2>
+            <div class="search-container">
+                <input type="text" placeholder="Enter patient ID or name" id="search-query">
+                <button type="button" onclick="searchPatient()">Search</button>
+            </div>
+        </div>
+
+        <!-- Analyse Patient Section -->
+        <div id="analyse-patient" class="section">
+            <h2>Analyse Patient</h2>
+            <!-- Detection Result -->
+            <div id="detection-result"></div>
+            <!-- Tumour Details: Each item is wrapped in a tumour-card -->
+            <div id="tumour-details" style="display: none;">
+                <div class="tumour-card">
+                    <p><strong>Type of Brain Tumour:</strong></p>
+                    <p>Glioblastoma Multiforme</p>
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Risk Stratification:</strong></p>
+                    <img src="https://via.placeholder.com/400x200?text=Risk+Graph" alt="Risk Graph">
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Heatmap Generation:</strong></p>
+                    <img src="https://via.placeholder.com/400x200?text=Heatmap" alt="Heatmap">
+                </div>
+                <div class="tumour-card">
+                    <p><strong>Stage Analysis:</strong></p>
+                    <p>Stage II</p>
+                </div>
+                <div class="tumour-card">
+                    <p><strong>AI Analysis:</strong></p>
+                    <p>Suggested Treatment: Surgical resection with adjunct chemotherapy.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Chat Section -->
+        <div id="ai-chat" class="section">
+            <h2>Talk with AI</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Chat messages will appear here -->
+                </div>
+                <div class="chat-input-container">
+                    <!-- Hidden file input triggered by the attachment label -->
+                    <input type="file" id="attachment-input" style="display: none;">
+                    <label for="attachment-input" class="attachment-label">
+                        <i class="fas fa-paperclip"></i>
+                    </label>
+                    <input type="text" id="chat-input" placeholder="Type your message here...">
+                    <button id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Refer to Doctor Section -->
+        <div id="refer-doctor" class="section">
+            <h2>Refer to Doctor</h2>
+            <p>Invite other doctors for collaboration.</p>
+        </div>
+    </div>
+
+    <script>
+        // Function to show the selected section and update active class for menu items
+        function showSection(sectionId, element) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+
+            // Remove active class from all menu items and add to the selected one
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+
+            // If on mobile, hide sidebar after selection
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            // If the Analyse Patient section is shown, run the analysis simulation
+            if (sectionId === 'analyse-patient') {
+                runAnalysis();
+            }
+        }
+
+        // Toggle sidebar for mobile view
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Placeholder logout function
+        function logout() {
+            alert('Logging out...');
+            // Implement your logout functionality here
+        }
+
+        // Handle Add Patient form submission and simulate processing steps
+        document.getElementById('add-patient-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Hide the form and show the progress container
+            this.style.display = 'none';
+            var progressContainer = document.getElementById('progress-container');
+            progressContainer.style.display = 'block';
+            var progressMessage = document.getElementById('progress-message');
+
+            progressMessage.innerText = 'Processing...';
+
+            // Simulate processing steps using timeouts
+            setTimeout(function () {
+                progressMessage.innerText = 'Analyzing...';
+            }, 2000);
+
+            setTimeout(function () {
+                progressMessage.innerText = 'Almost Done...';
+            }, 4000);
+
+            setTimeout(function () {
+                progressMessage.innerText = 'Analysis Complete!';
+                setTimeout(function () {
+                    // Reset the form and hide the progress container before transitioning
+                    var addPatientForm = document.getElementById('add-patient-form');
+                    addPatientForm.reset();
+                    addPatientForm.style.display = 'block';
+                    progressContainer.style.display = 'none';
+                    // Automatically switch to the Analyse Patient section by simulating a click
+                    document.getElementById('menu-analyse').click();
+                }, 1000);
+            }, 6000);
+        });
+
+        // Placeholder function for Search Patient
+        function searchPatient() {
+            var query = document.getElementById('search-query').value;
+            if (query) {
+                alert('Searching for: ' + query);
+                // Add your search functionality here.
+            } else {
+                alert('Please enter a patient ID or name.');
+            }
+        }
+
+        // Function to simulate brain tumour detection and show analysis details
+        function runAnalysis() {
+            var detectionResult = document.getElementById('detection-result');
+            var tumourDetails = document.getElementById('tumour-details');
+            // For demonstration, we set tumourDetected to true.
+            // In a real application, this would be determined by your AI analysis.
+            var tumourDetected = true;
+            if (tumourDetected) {
+                detectionResult.innerHTML = '<p><strong>Brain Tumour Detection:</strong> Yes</p>';
+                tumourDetails.style.display = 'grid';
+            } else {
+                detectionResult.innerHTML = '<p><strong>Brain Tumour Detection:</strong> No</p>';
+                tumourDetails.style.display = 'none';
+            }
+        }
+
+        // Chat functionality: Send message when the send button is clicked
+        document.getElementById('send-button').addEventListener('click', function () {
+            var messageInput = document.getElementById('chat-input');
+            var messageText = messageInput.value;
+            if (messageText.trim() !== '') {
+                var chatMessages = document.getElementById('chat-messages');
+                var messageDiv = document.createElement('div');
+                messageDiv.textContent = messageText;
+                messageDiv.className = 'chat-message';
+                chatMessages.appendChild(messageDiv);
+                messageInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+
+        // Optional: Handle file attachment selection
+        document.getElementById('attachment-input').addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                var fileName = this.files[0].name;
+                // Display the attached file name in the chat messages area as a system message
+                var chatMessages = document.getElementById('chat-messages');
+                var fileMessage = document.createElement('div');
+                fileMessage.textContent = "Attached file: " + fileName;
+                fileMessage.className = 'chat-message system';
+                chatMessages.appendChild(fileMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+
+        // Optional: close sidebar when clicking outside on mobile devices
+        document.addEventListener('click', function (e) {
+            const sidebar = document.getElementById('sidebar');
+            const header = document.querySelector('.dashboard-header');
+            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                if (!sidebar.contains(e.target) && !header.contains(e.target)) {
+                    toggleSidebar();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
