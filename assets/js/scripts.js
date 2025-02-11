@@ -3,10 +3,12 @@ function openPopup(type) {
   document.getElementById(type + "-popup").style.display = "block";
   document.querySelector(".main-content").classList.add("blur");
 }
+
 function closePopup(type) {
   document.getElementById(type + "-popup").style.display = "none";
   document.querySelector(".main-content").classList.remove("blur");
 }
+
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", function (e) {
@@ -16,6 +18,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     });
   });
 });
+
 // Toggle menu display on small screens
 function toggleMenu() {
   var navLinks = document.getElementById("nav-links");
@@ -26,6 +29,7 @@ function toggleMenu() {
     navLinks.style.display = window.innerWidth <= 768 ? "block" : "flex";
   }
 }
+
 // Add animation on scroll
 window.addEventListener("scroll", function () {
   const features = document.querySelectorAll(".feature-card");
@@ -37,10 +41,33 @@ window.addEventListener("scroll", function () {
   });
 });
 
-//DashBoard Page:
+// Function to clear the Analyse Patient section
+function clearAnalysePatient() {
+  // Reset the Analyse Patient form
+  var analyseForm = document.getElementById("analyse-form");
+  if (analyseForm) {
+    analyseForm.reset();
+  }
+  // Hide the detection result and clear its content
+  var detectionResult = document.getElementById("detection-result");
+  if (detectionResult) {
+    detectionResult.style.display = "none";
+    detectionResult.innerHTML = "";
+  }
+  // Hide the tumour details
+  var tumourDetails = document.getElementById("tumour-details");
+  if (tumourDetails) {
+    tumourDetails.style.display = "none";
+  }
+}
 
 // Function to show the selected section and update active class for menu items
 function showSection(sectionId, element) {
+  // Before switching sections, if leaving Analyse Patient, clear its contents.
+  if (sectionId !== "analyse-patient") {
+    clearAnalysePatient();
+  }
+
   // Hide all sections
   document.querySelectorAll(".section").forEach((section) => {
     section.classList.remove("active");
@@ -60,10 +87,8 @@ function showSection(sectionId, element) {
     toggleSidebar();
   }
 
-  // If the Analyse Patient section is shown, run the analysis simulation
-  if (sectionId === "analyse-patient") {
-    runAnalysis();
-  }
+  // Removed automatic analysis run here;
+  // Analysis will now only be triggered by the Generate button.
 }
 
 // Toggle sidebar for mobile view
@@ -136,13 +161,25 @@ function runAnalysis() {
   if (tumourDetected) {
     detectionResult.innerHTML =
       "<p><strong>Brain Tumour Detection:</strong> Yes</p>";
+    // Use "grid" to match your CSS grid layout for tumour-details
     tumourDetails.style.display = "grid";
   } else {
     detectionResult.innerHTML =
       "<p><strong>Brain Tumour Detection:</strong> No</p>";
     tumourDetails.style.display = "none";
   }
+  // Show the detection result
+  detectionResult.style.display = "block";
 }
+
+// Handle the Analyse Patient form submission (Generate button click)
+document
+  .getElementById("analyse-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    // Run the analysis simulation only when the form is submitted.
+    runAnalysis();
+  });
 
 // Chat functionality: Send message when the send button is clicked
 document.getElementById("send-button").addEventListener("click", function () {
@@ -175,7 +212,7 @@ document
     }
   });
 
-// Optional: close sidebar when clicking outside on mobile devices
+// Optional: Close sidebar when clicking outside on mobile devices
 document.addEventListener("click", function (e) {
   const sidebar = document.getElementById("sidebar");
   const header = document.querySelector(".dashboard-header");

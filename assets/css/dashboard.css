@@ -324,3 +324,7 @@ button[type="submit"]:hover {
   font-size: 1.2rem;
   color: #005792;
 }
+
+.tumour-details {
+  display: none;
+}

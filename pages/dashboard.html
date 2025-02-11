@@ -55,6 +55,10 @@
             <h2>Add Patient</h2>
             <form id="add-patient-form">
                 <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="doctor-id">Doctor ID:</label>
+                        <input type="text" id="doctor-id" name="doctor_id" value="12345" readonly>
+                    </div>
                     <!-- Row 1: First Name and Last Name -->
                     <div class="form-group">
                         <label for="first-name">First Name:</label>
@@ -127,9 +131,29 @@
         <!-- Analyse Patient Section -->
         <div id="analyse-patient" class="section">
             <h2>Analyse Patient</h2>
-            <!-- Detection Result -->
-            <div id="detection-result"></div>
-            <!-- Tumour Details: Each item is wrapped in a tumour-card -->
+            <!-- Analyse Form -->
+            <form id="analyse-form">
+                <div class="form-group">
+                    <label for="patient-select">Select Patient:</label>
+                    <select id="patient-select" name="patient_select" required>
+                        <option value="">-- Select Patient --</option>
+                        <option value="patient1">Patient 1</option>
+                        <option value="patient2">Patient 2</option>
+                        <option value="patient3">Patient 3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mri-report-upload">Upload MRI Report:</label>
+                    <input type="file" id="mri-report-upload" name="mri_report_upload" accept="image/*,application/pdf"
+                        required>
+                </div>
+                <button type="submit" id="generate-btn">Generate</button>
+            </form>
+            <!-- Detection Result (hidden by default) -->
+            <div id="detection-result" style="display: none;">
+                <p><strong>Detection Result:</strong> MRI Analysis Completed</p>
+            </div>
+            <!-- Tumour Details (hidden by default, will be shown after generating) -->
             <div id="tumour-details" style="display: none;">
                 <div class="tumour-card">
                     <p><strong>Type of Brain Tumour:</strong></p>
@@ -183,6 +207,7 @@
     </div>
 
     <script src="../assets/js/scripts.js"></script>
+
 </body>
 
 </html>
