@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brainwee - AI-Powered Brain Tumor Analysis Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/index.css">
+</head>
+
+<body>
+    <!-- Login Popup -->
+    <div id="login-popup" class="popup">
+        <span class="close-popup" onclick="closePopup('login')">&times;</span>
+        <h2>Sign In</h2>
+        <input type="email" id="login-email" name="email" placeholder="Email" required>
+        <input type="password" id="login-password" name="password" placeholder="Password" required>
+        <button onclick="handleLogin()">Login</button>
+        <p id="login-error" class="error-message"></p>
+    </div>
+
+    <!-- Signup Popup -->
+    <div id="signup-popup" class="popup">
+        <span class="close-popup" onclick="closePopup('signup')">&times;</span>
+        <h2>Sign Up</h2>
+        <input type="text" id="full_name" name="full_name" placeholder="Full Name" required>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <input type="text" id="registration_number" name="registration_number" placeholder="Doctor Registration Number" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+        <button onclick="handleSignup()">Sign Up</button>
+        <p id="signup-error" class="error-message"></p>
+    </div>
+
+    <div class="main-content">
+        <header class="header">
+            <div class="logo">Brainwee</div>
+            <button class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            <div class="nav-links" id="nav-links">
+                <a href="#features" class="cta-button">Features</a>
+                <a href="#dashboard" class="cta-button">Dashboard</a>
+                <a href="#" class="cta-button" onclick="openPopup('login')">Sign In</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>AI-Powered Brain Tumor Analysis</h1>
+            <p>Advanced tumor detection, classification, and collaborative treatment planning for medical professionals</p>
+            <div class="break"></div>
+            <a href="#" class="cta-button" onclick="openPopup('signup')">Sign Up</a>
+        </section>
+
+        <section class="features" id="features">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain feature-icon"></i>
+                    <h3>Tumor Detection</h3>
+                    <p>Instant AI analysis of MRI scans with binary tumor detection (Yes/No)</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-map feature-icon"></i>
+                    <h3>Heatmap & Risk Analysis</h3>
+                    <p>Visual tumor localization and treatment risk assessment</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-stethoscope feature-icon"></i>
+                    <h3>Stage Detection</h3>
+                    <p>Comprehensive tumor classification and staging system</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-robot feature-icon"></i>
+                    <h3>Medical Chatbot</h3>
+                    <p>24/7 AI assistant for tumor-related queries and research</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2023 Brainwee. Medical Professionals Platform</p>
+            <p>HIPAA Compliant | Secure Cloud Storage | 256-bit Encryption</p>
+        </footer>
+    </div>
+
+    <script>
+        async function handleLogin() {
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value.trim();
+            const errorMessage = document.getElementById("login-error");
+
+            if (!email || !password) {
+                errorMessage.innerText = "Please enter both email and password.";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Login successful!");
+                    closePopup('login');
+                    window.location.href = "/dashboard";
+                } else {
+                    errorMessage.innerText = data.error || "Invalid credentials!";
+                }
+            } catch (error) {
+                errorMessage.innerText = "Server error. Try again later.";
+            }
+        }
+
+        async function handleSignup() {
+            const fullName = document.getElementById("full_name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const registrationNumber = document.getElementById("registration_number").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirmPassword = document.getElementById("confirm_password").value.trim();
+            const errorMessage = document.getElementById("signup-error");
+
+            if (!fullName || !email || !registrationNumber || !password || !confirmPassword) {
+                errorMessage.innerText = "All fields are required.";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorMessage.innerText = "Passwords do not match!";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ full_name: fullName, email, registration_number: registrationNumber, password }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert("Signup successful!");
+                    closePopup('signup');
+                    window.location.href = "/dashboard";
+                } else {
+                    errorMessage.innerText = data.error || "Signup failed!";
+                }
+            } catch (error) {
+                errorMessage.innerText = "Server error. Try again later.";
+            }
+        }
+
+        function openPopup(type) {
+            document.getElementById(`${type}-popup`).style.display = "block";
+        }
+
+        function closePopup(type) {
+            document.getElementById(`${type}-popup`).style.display = "none";
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById("nav-links");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</body>
+
+</html>
